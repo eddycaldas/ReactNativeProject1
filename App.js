@@ -1,31 +1,46 @@
 
 import React, {Component} from 'react';
-import {StyleSheet, TextInput, View, Button} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+
+import PlaceInput from './src/components/PlaceInput/PlaceInput';
+import PlaceList from './src/components/PlaceList/PlaceList';
+import workerImage from './src/assets/image.jpg';
 
 export default class App extends Component {
   state = {
-    placeName: ''
+    places: []
   }
 
-  placeNameChangeHandler = (event) => {
-    this.setState({
-      placeName: event
+  placeAddedHandler = (placeName) => {
+    this.setState(prevState => {
+      return {
+        places: prevState.places.concat({
+        key: Math.random(), 
+        name: placeName,
+        image: workerImage
+        })
+      }
+    })
+  }
+
+  placeDeletedHandler = (key) => {
+    this.setState(prevState => {
+      return {
+        places: prevState.places.filter(place => {
+          return place.key !== key;
+      })
+      }
     })
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.inputContainer}>
-          <TextInput 
-          style={styles.textStyle}
-          value={this.state.placeName}
-          onChangeText={this.placeNameChangeHandler}
-          placeholder="Add name, phone number, skills"
-          />
-         <Button title="Add"/>
+        <PlaceInput onPlaceAdded={this.placeAddedHandler}/>
+        <PlaceList 
+          places={this.state.places}
+          onItemDeleted={this.placeDeletedHandler}/>
         </View>
-      </View>
     );
   }
 }
@@ -37,13 +52,5 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-  },
-  textStyle: {
-    width: 300
-  },
-  inputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: "space-between"
   }
 });
